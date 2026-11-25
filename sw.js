@@ -1,4 +1,4 @@
-const CACHE = 'aceton-global-186-cyclefix-light-pwa-4';
+const CACHE = 'aceton-global-186-tap25-pwa-6';
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./game-186-1.js", "./game-186-2.js"];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES.map(path => new Request(path, {cache: "reload"})))).then(() => self.skipWaiting()));
