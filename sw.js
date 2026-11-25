@@ -1,7 +1,7 @@
-const CACHE = 'aceton-global-186-fastcases-pwa-1';
+const CACHE = 'aceton-global-186-layoutfix-pwa-2';
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./game-186-1.js", "./game-186-2.js"];
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES.map(path => new Request(path, {cache: "reload"})))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('aceton-global-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));

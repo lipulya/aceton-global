@@ -516,4 +516,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!confirmBox.hidden)
 #app #timeRewardOpen,#app #arcadeOpen{grid-column:auto!important;position:static!important;display:block!important;width:100%!important;min-width:0!important;max-width:none!important;min-height:58px!important;padding:12px 6px!important;margin:0!important;font-size:clamp(13px,3.8vw,19px)!important;line-height:1.2!important;white-space:nowrap!important;box-sizing:border-box!important;border:2px solid #d97aff;border-radius:18px;font-weight:900;color:white;box-shadow:0 5px 25px #a932e844;background:linear-gradient(135deg,#a532df,#5823ad)}
 #app.emerald-royal #timeRewardOpen{background:linear-gradient(135deg,#28684b,#103923)!important;border-color:#d8b766!important;color:#fff1c4!important;box-shadow:0 0 14px #c3a24c55!important}
 #app[data-legend-theme] #timeRewardOpen{background:var(--lt-active)!important;border-color:var(--lt-gold)!important;color:var(--lt-text)!important;box-shadow:0 0 11px color-mix(in srgb,var(--lt-glow) 48%,transparent)!important}
+</style><style id="ios-lobby-bottom-fix">
+/* Use the visible viewport in standalone mode; keep controls clear of the home indicator. */
+#app{--lobby-bottom-inset: max(8px, min(env(safe-area-inset-bottom, 0px), 34px));}
+@media (display-mode: standalone){
+  #app{position:fixed;inset:0;width:100%;height:auto;min-height:0;margin:0;}
+}
+#app .lobby-bottom-actions{bottom:var(--lobby-bottom-inset)!important;}
+#app .heroname{bottom:calc(var(--lobby-bottom-inset) + 69px)!important;}
+#app .heroarea{bottom:calc(var(--lobby-bottom-inset) + 96px)!important;}
 </style></body></html>
