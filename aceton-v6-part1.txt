@@ -412,7 +412,7 @@ for(const k of ['syavaKeys','syavaEarned','horrorMilestoneClaims','sheriffEarned
 state.syavaCollection=state.syavaCollection&&typeof state.syavaCollection==='object'&&!Array.isArray(state.syavaCollection)?state.syavaCollection:{};
 const chapterCount=(v,start,end)=>v.main*(end-start+1)+Math.max(0,Math.min(end,v.level)-start+1);
 const syavaEarnedAt=(v=levelInfo())=>chapterCount(v,1,9);
-const sheriffEarnedAt=(v=levelInfo())=>5*chapterCount(v,10,10);
+const sheriffEarnedAt=(v=levelInfo())=>chapterCount(v,10,10);
 if(oldModel!==4&&oldModel!==5&&oldModel!==6){let xp=cleanInt(state.levelXP),cycles=0,partial=0;if(oldModel===3){cycles=Math.floor(xp/2000000);partial=xp%2000000;}else{const oldLevels=Math.floor(xp/50000),l=oldLevels%20;cycles=Math.floor(oldLevels/20);partial=levelThreshold(l)+Math.floor((xp%50000)/50000*levelCost(l+1));}
  setXP(migrateFlatXP(cycles*LEVEL_CYCLE_XP+partial));const v=levelInfo();
  // Preserve completed old cycles and their already-issued rewards, without inventing rewards for new chapters in those cycles.
@@ -443,7 +443,7 @@ function laterRoad(c){
  ['moggedEarned','moggedEarned','moggedEarned','royalEarned'].forEach((k,i)=>plan[positions[i]].push([k,1]));
  roadPlanCache.set(c,plan);return plan;
 }
-function baseRoadRewards(n,c){if(c>0){if(c*60+n<=cleanInt(state.roadLegacyThrough)){const i=[5,11,17,23,29,35,41,47,53,60].indexOf(n);return i<0?[]:[[legacyLaterRoad(c)[i],1]];}return laterRoad(c)[n-1]||[];}if(n<=9)return [['syavaKeys',1]];if(n===10)return [['sheriffEarned',10],['character',2,25000,'Святосява']];if(n<=20)return [['skinKeys',2]];if(n<=29)return [['bullKeys',1]];if(n===30)return [['royalEarned',1],['character',3,75000,'Бычок']];if(n<=39)return [['vorsinKeys',1]];if(n===40)return [['moggedEarned',10]];if(n<=50)return [['gazyavaEarned',2],['vorsinKeys',1]];return [['vorsinKeys',1],['gazyavaEarned',1],['skinKeys',1]];}
+function baseRoadRewards(n,c){if(c>0){if(c*60+n<=cleanInt(state.roadLegacyThrough)){const i=[5,11,17,23,29,35,41,47,53,60].indexOf(n);return i<0?[]:[[legacyLaterRoad(c)[i],1]];}return laterRoad(c)[n-1]||[];}if(n<=9)return [['syavaKeys',1]];if(n===10)return [['sheriffEarned',1],['character',2,25000,'Святосява']];if(n<=20)return [['skinKeys',2]];if(n<=29)return [['bullKeys',1]];if(n===30)return [['royalEarned',1],['character',3,75000,'Бычок']];if(n<=39)return [['vorsinKeys',1]];if(n===40)return [['moggedEarned',10]];if(n<=50)return [['gazyavaEarned',2],['vorsinKeys',1]];return [['vorsinKeys',1],['gazyavaEarned',1],['skinKeys',1]];}
 function roadRewards(n,c){const rewards=baseRoadRewards(n,c).filter(x=>x[0]!=='moggedEarned'&&x[0]!=='royalEarned').map(x=>x.slice());if(c>0||n===30)rewards.push(['moggedEarned',1]);else if(n===40)rewards.push(['moggedEarned',2]);if(n===60)rewards.push(['royalEarned',1]);return rewards;}
 const storedRoad={...old,...saved};
 if(storedRoad.roadModel!==1&&storedRoad.roadModel!==2){
