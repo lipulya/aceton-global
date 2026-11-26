@@ -388,12 +388,48 @@ animation:ltPulse 2.35s ease-in-out infinite}
 </script>
 <script id="cycle-reward-hotfix">
 (function(){
-  roadRewards = function roadRewards(n,c){const rewards=baseRoadRewards(n,c).map(x=>x.slice());if(c===0)return rewards;for(const [k,count] of [['moggedEarned',5],['royalEarned',1]]){const existing=rewards.find(x=>x[0]===k);if(existing)existing[1]+=count;else rewards.push([k,count]);}return rewards;};
-  const originalShow = show;
-  show = function(markup){
-    if(typeof markup === 'string') markup = markup.replace('На каждом новом уровне дополнительно +5 бесплатных наград MOGGED и +1 королевская.', 'Начиная со второго цикла на каждом новом уровне дополнительно +5 бесплатных наград MOGGED и +1 королевская.');
-    return originalShow.call(this, markup);
+  const oldRoadRewards=roadRewards;
+  const firstAwarded=storedRoad.roadModel===2?Math.min(cleanInt(storedRoad.roadRewardedThrough),cleanInt(state.roadRewardedThrough)):cleanInt(state.roadRewardedThrough);
+  roadRewards=function(n,c){
+    const rewards=[];
+    const add=(k,count,amount,name)=>{const same=rewards.find(x=>x[0]===k&&k!=='character');if(same)same[1]+=count;else rewards.push(amount===undefined?[k,count]:[k,count,amount,name]);};
+    for(const [k,count,amount,name] of baseRoadRewards(n,c)){
+      if(k==='royalEarned')add('moggedEarned',count*5);else add(k,count,amount,name);
+    }
+    if(c>0)add('moggedEarned',10);
+    if(n===60)add('royalEarned',1);
+    return rewards;
   };
+  // The original script can issue pending road rewards during initial load.
+  // Reconcile only levels awarded on this load, never already saved rewards.
+  for(let t=firstAwarded+1;t<=cleanInt(state.roadRewardedThrough);t++){
+    const n=(t-1)%60+1,c=Math.floor((t-1)/60);
+    const before=oldRoadRewards(n,c),after=roadRewards(n,c);
+    for(const k of ['moggedEarned','royalEarned']){
+      const count=rows=>rows.reduce((sum,row)=>sum+(row[0]===k?row[1]:0),0);
+      state[k]=Math.max(0,cleanInt(state[k])+count(after)-count(before));
+    }
+  }
+  openResetSettings=function(){
+    show('<h2>⚙️ Настройки</h2><p>Полный сброс удалит баланс, уровни, персонажей, скины, ключи, промокоды, улучшения, таймеры и рекорды мини-игр на этом устройстве.</p><button type="button" class="reset" id="reset">🗑️ Сбросить весь прогресс</button>');
+    $('reset').onclick=()=>{
+      show('<h2>Точно сбросить?</h2><p>Восстановить удалённый прогресс нельзя.</p><button type="button" class="reset" id="confirmreset">Да, удалить весь прогресс</button><button type="button" class="buy" id="cancelreset" style="margin-top:12px">Отмена</button><p id="resetStatus" role="status"></p>');
+      $('cancelreset').onclick=openQuickSettings;
+      $('confirmreset').onclick=()=>{
+        const fresh={...base,owned:[true,false,false,false,false],promos:[],syavaCollection:{},timeRewardClocks:{},timeEmeraldInterval:20,fastRewardAnimation:false,levelXP:'0'};
+        try{
+          // Write the replacement first so pagehide cannot save an old state.
+          localStorage.setItem('aceton_clicker_v3',JSON.stringify(fresh));
+          state=fresh;
+          for(const key of ['aceton_clicker_demo_v1','aceton_clicker_demo_v2','aceton_arcade_records_v1','aceton_wheel_record_v1'])localStorage.removeItem(key);
+          clearAntiRuntime();
+        }catch(error){$('resetStatus').textContent='Не удалось полностью сбросить сохранение. Проверь доступ к хранилищу браузера.';return;}
+        $('confirmreset').disabled=true;$('resetStatus').textContent='Прогресс сброшен. Перезапуск…';
+        location.reload();
+      };
+    };
+  };
+  save();
 })();
 </script><script>
 (function(){
